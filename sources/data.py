@@ -61,13 +61,6 @@ def read_adjust_dicom(ImPath, Mask_Path, Resize=(1100,600)):
         # Resize Image and Mask
         I_resized = cv2.resize(I, (Resize[1], Resize[0]), cv2.INTER_AREA)
         M_resized = cv2.resize(M, (Resize[1], Resize[0]), cv2.INTER_AREA)
-        print(f"Taille image resizee : {I_resized.shape}; "
-              f"min value : {np.min(I_resized)}; "
-              f"max value : {np.max(I_resized)}; "
-              f"mean value : {np.mean(I_resized)}")
-        print(f"Taille mask resize : {M_resized.shape};  "
-              f"min value : {np.min(M_resized)}; "
-              f"max value : {np.max(M_resized)}")
 
         # Combine Image+Mask in same array
         tmp[:, :, 0] = I_resized
@@ -107,16 +100,8 @@ def create_patches (Dataset, Size=(64,64), Max_patches=1000, Threshold=200):
             if sum(sum(patch[:, :, 1])) > 0.05 * (Size[0]*Size[1]):
                 isPatchaMass[i] = 1
 
-        print(f"Ttal number of masses on image {K} : {sum(isPatchaMass)} \n")
+        print(f"Total number of masses on image {K} : {sum(isPatchaMass)} \n")
         nb_masses_tot = nb_masses_tot + sum(isPatchaMass)
-
-        # Concatenate patches from every images
-        #if K == 0:
-        #    patches_tot = patches_NZ
-        #    annotation_tot = isPatchaMass
-        #else:
-        #    patches_tot = np.concatenate((patches_tot, patches_NZ), axis=0)
-        #    annotation_tot = np.concatenate((annotation_tot, isPatchaMass), axis=0)
 
         patches_tot.append(patches_NZ)
         annotation_tot.append(isPatchaMass)
@@ -131,21 +116,25 @@ def create_patches (Dataset, Size=(64,64), Max_patches=1000, Threshold=200):
 
 def two_classes_split(dataset, annotation):
 
+    # Gobal list of the 4 cases
     differenciated_dataset = []
 
     for i, image in enumerate(dataset):
 
+        # Temporary list of each case
         current_image = []
         mass_patches = []
         non_mass_patches = []
 
         for p, patch in enumerate(image):
 
+            # Diffenciation of mass patches and non mass patches from annotation array
             if annotation[i][p] == 1.:
                 mass_patches.append(np.array(patch))
             else:
                 non_mass_patches.append(np.array(patch))
 
+        # Storage of the lists
         current_image.append(np.array(non_mass_patches))
         current_image.append(np.array(mass_patches))
 
