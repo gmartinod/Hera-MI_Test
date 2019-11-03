@@ -18,15 +18,17 @@ def trainning_session(train_generator, valid_generator, len_train, len_valid, in
                         write_graph=True,
                         write_images=True,
                         profile_batch=0)
+    
+    EarlyStop = EarlyStopping(monitor='val_accuracy',
+                              mode='max',
+                              patience=patience)
 
     # Tensorboard launch in virtualenv
     tb = program.TensorBoard()
     tb.configure(argv=[None, '--logdir', logs_path])
     url = tb.launch()
-
-    EarlyStop = EarlyStopping(monitor='val_accuracy',
-                              mode='max',
-                              patience=patience)
+    
+    print(f"Tensorboard visualization available at : {url}")
 
     # Loading the model
     model = VGG16(input_size=input_size,
@@ -35,14 +37,12 @@ def trainning_session(train_generator, valid_generator, len_train, len_valid, in
                   loss=loss,
                   metric=metric)
 
-    print(f"Tensorboard visualization available at : {url}")
-
     model.fit_generator(train_generator,
                         steps_per_epoch=len_train / batch,
                         epochs=epochs,
                         validation_data=valid_generator,
                         validation_steps=len_valid / batch,
                         shuffle=True,
-     #                   class_weight={0: Proportion, 1: (1. - Proportion)},
+     #                  class_weight={0: Proportion, 1: (1. - Proportion)},
                         callbacks=[model_checkpoint, Board, EarlyStop])
 
