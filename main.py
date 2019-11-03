@@ -45,16 +45,8 @@ Patches, Annotation, Proportion = create_patches(Dataset=Dataset,
                                                   Max_patches=Nb_patch,
                                                   Threshold=Threshold_patch)
 
-print(f"From main, Patches shape for image 0: {Patches[0].shape}\n"
-      f"From main, annotation shape for image 0: {Annotation[0].shape}\n")
-
 diff_dataset = two_classes_split(dataset=Patches,
                                  annotation=Annotation)
-
-print(f"Mass patches shape in image 0: {np.array(diff_dataset[0][1]).shape};\n"
-      f"Non mass patches shape in image 0 : {np.array(diff_dataset[0][0]).shape}\n"
-      f"From main, global proportion of masses : {Proportion}\n")
-
 
 
 ## Data augmentation (parameter in function "Augmentation")
@@ -92,7 +84,6 @@ predicted = testing_session(weight_path=weight_path,
                              learning_rate=learning_rate)
 
 ## print results
-#print(f"Results on test set : Weighted loss = {evaluation[0]}; {str(metric)} metric = {evaluation[1]};")
 
 target_names = ['Non mass', 'Mass']
 report = classification_report(y_test, predicted, target_names=target_names)
