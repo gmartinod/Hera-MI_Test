@@ -6,7 +6,8 @@ import tensorflow as tf
 from tensorflow import keras  # tf.keras
 from tensorflow.keras.preprocessing.image import *
 from tensorflow.keras.callbacks import *
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc
+import matplotlib.pyplot as plt
 
 
 ############################################################
@@ -83,8 +84,34 @@ predicted = testing_session(weight_path=weight_path,
                              feature_maps=feature_maps,
                              learning_rate=learning_rate)
 
-## print results
+
+## print binary results
+
+bi_results = predicted
+bi_results[predicted > 0.5] = int(1)
+bi_results[predicted <= 0.5] = int(0)
 
 target_names = ['Non mass', 'Mass']
-report = classification_report(y_test, predicted, target_names=target_names)
-print(report)
+report = classification_report(y_test, bi_results, target_names=target_names)
+matrice = confusion_matrix(y_test, bi_results)
+
+print(f"Rapport de classification binaire : \n{report}")
+print(f"Matrice de confusion binaire : \n{matrice}")
+
+## print ROC and AUC
+
+fpr, tpr, _ = roc_curve(y_test, predicted)
+roc_auc = auc(fpr, tpr)
+
+plt.figure()
+lw = 2
+plt.plot(fpr, tpr, color='darkorange',
+         lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic')
+plt.legend(loc="lower right")
+plt.show()
