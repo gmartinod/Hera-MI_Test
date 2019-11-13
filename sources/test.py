@@ -17,8 +17,4 @@ def testing_session(weight_path, x_test, y_test, input_size, loss, metric, featu
     results = model.predict(x=x_test,
                             batch_size=1)
 
-    # Threshold of the probability value
-    results[results > 0.5] = int(1)
-    results[results <= 0.5] = int(0)
-
     return results
